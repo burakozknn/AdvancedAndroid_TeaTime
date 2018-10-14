@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -44,6 +45,7 @@ public class MenuActivity extends AppCompatActivity
 
     @Nullable
     private SimpleIdlingResource mIdlingResource;
+
 
     /**
      * TODO (3) Create a method that returns the IdlingResource variable. It will
@@ -71,8 +73,7 @@ public class MenuActivity extends AppCompatActivity
      */
 
 
-    // TODO (5) Override onDone so when the thread in ImageDownloader is finished, it returns an
-    // ArrayList of Tea objects via the callback.
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +83,10 @@ public class MenuActivity extends AppCompatActivity
         setSupportActionBar(menuToolbar);
         getSupportActionBar().setTitle(getString(R.string.menu_title));
 
+
+        //get the IdlingResource variable
+        getIdlingResource();
+
         // Create an ArrayList of teas
         final ArrayList<Tea> teas = new ArrayList<>();
         teas.add(new Tea(getString(R.string.black_tea_name), R.drawable.black_tea));
@@ -90,6 +95,22 @@ public class MenuActivity extends AppCompatActivity
         teas.add(new Tea(getString(R.string.oolong_tea_name), R.drawable.oolong_tea));
         teas.add(new Tea(getString(R.string.honey_lemon_tea_name), R.drawable.honey_lemon_tea));
         teas.add(new Tea(getString(R.string.chamomile_tea_name), R.drawable.chamomile_tea));
+
+
+    }
+
+    // TODO (5) Override onDone so when the thread in ImageDownloader is finished, it returns an
+    // ArrayList of Tea objects via the callback.
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ImageDownloader.downloadImage( this,MenuActivity.this,mIdlingResource );
+    }
+
+
+    @Override
+    public void onDone(ArrayList<Tea> teas) {
 
         // Create a {@link TeaAdapter}, whose data source is a list of {@link Tea}s.
         // The adapter know how to create grid items for each item in the list.
@@ -111,10 +132,6 @@ public class MenuActivity extends AppCompatActivity
                 startActivity(mTeaIntent);
             }
         });
-    }
-
-    @Override
-    public void onDone(ArrayList<Tea> teas) {
 
     }
 }
